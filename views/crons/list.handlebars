@@ -1,0 +1,578 @@
+
+<div class="content">
+    {{#if (length crons) }}
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <!-- Page pre-title -->
+                    </div>
+
+
+                    <div  class="col">
+                        <div id="success_message" class="ajax_response" style="float:left;color: green;">{{ message }}</div>
+                    </div>
+
+                    <!-- Page title actions -->
+                    <div class="col-auto ms-auto d-print-none">
+                        <div class="btn-list">
+                            <!--<span class="d-none d-sm-inline">
+                              <a href="#" class="btn btn-white">
+                                New view
+                              </a>
+                            </span>-->
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal-cron"
+                               class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal"
+                               data-bs-target="#modal-user">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Create New Cron
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cards">
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table table-vcenter table-mobile-md card-table">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    {{!-- <th>Command</th> --}}
+                                    <th>Second</th>
+                                    <th>Minute</th>
+                                    <th>Hour</th>
+                                    <th>Day</th>
+                                    <th>Month</th>
+                                    <th>Day of Week</th>
+                                    <th>Created</th>
+                                    <th>Status</th>
+                                    <th class="w-1"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each crons}}
+                                    <tr>
+                                        <td data-label="Name">
+                                            <div class="d-flex py-1 align-items-center">
+                                                <div class="flex-fill">
+                                                    <div class="font-weight-medium">{{ this.cronName }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.cronDesc }}</div>
+                                        </td>
+                                        {{!-- <td data-label="Title">
+                                            <div>{{ this.command }}</div>
+                                        </td> --}}
+                                        <td data-label="Title">
+                                            <div>{{ this.second }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.minute }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.hour }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.day }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.month }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.dayofweek }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <div>{{ this.created_at }}</div>
+                                        </td>
+                                        <td data-label="Title">
+                                            <label class="form-check form-switch">
+                                                <input class="form-check-input status" type="checkbox"
+                                                       value="{{this._id}}/{{this.name}}" id="status{{@index}}" {{#if this.status}}
+                                                       checked="" {{/if}}>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <div class="btn-list flex-nowrap">
+
+                                                <div class="dropdown">
+                                                    <button class="btn dropdown-toggle align-text-top"
+                                                            data-bs-boundary="viewport" data-bs-toggle="dropdown">
+                                                        Actions
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#modal-danger" id="{{ this._id }}/{{this.name}}"
+                                                           onclick="setDeletCron(this)">
+                                                            Delete
+                                                        </a>
+                                                        <button data-bs-toggle="modal" data-bs-target="#modal-cron-edit"
+                                                                 id="editcron_{{@index}}"
+                                                                value="{{this._id}}" class="dropdown-item editcron">
+                                                            Edit
+                                                        </button>
+                                                       <button id="startManually" onclick="startCron('{{this.command}}')" class="dropdown-item">Start</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                {{/each}}
+
+                                </tbody>
+                            </table>
+                            <hr>
+
+                            {{#pagination currentPage pageCount size}}
+                                <ul class="pagination float-right">
+                                    {{#unless startFromFirstPage}}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url }}?page={{ sub ../currentPage 1 }}">«</a>
+                                        </li>
+                                        <!--<a href="#" class="page-item page-link">&lt;</a>-->
+                                    {{/unless}}
+
+                                    {{#each pages}}
+                                        {{#if isCurrent}}
+                                            <li class="page-item active">
+                                                <a href="{{ url }}?page={{page}}" class="page-link">{{page}}</a>
+                                            </li>
+                                        {{/if}}
+                                        {{#unless isCurrent}}
+                                            <li class="page-item">
+                                                <a href="{{ url }}?page={{page}}" class="page-link">{{page}}</a>
+                                            </li>
+                                        {{/unless}}
+                                    {{/each}}
+
+
+                                    {{#unless endAtLastPage}}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url }}?page={{ add ../currentPage 1 }}"
+                                            rel="next">»</a>
+                                        </li>
+                                        <!--<a href="#" class="page-item">&gt;</a>-->
+                                    {{/unless}}
+
+                                </ul>
+                            {{/pagination}}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {{else}}
+        <div class="container-xl d-flex flex-column justify-content-center">
+            <div class="empty">
+                <div class="empty-img">
+                    <!--<img src="./static/illustrations/undraw_printing_invoices_5r4r.svg" height="128" alt="">-->
+                </div>
+                <p class="empty-title">No Crons Found in the system</p>
+                <p class="empty-subtitle text-muted">
+
+                </p>
+                <div class="empty-action">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal-cron" class="btn btn-primary">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                             stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add New
+                    </a>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+</div>
+
+
+<div class="modal" id="modal-cron" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Define New Cron</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addcron" action="/crons/addcron" method="POST">
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="mb-3">
+                            <label class="form-label required">Name</label>
+                            <div class="input-group input-group-flat">
+                                <input required name="name" placeholder="Name of Cron" type="text" class="form-control" value=""
+                                       autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label required">Description</label>
+                                <div class="input-group input-group-flat">
+                                    <input required name="description" placeholder="Explain what the cron will do" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label required">Command</label>
+                                <div class="input-group input-group-flat">
+                                    <input required name="command" placeholder="Command" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Second</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="second" placeholder="Define Seconds" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Minute</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="minute" placeholder="Define Minute" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Hour</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="hour" placeholder="Define Hour" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Day</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="day" placeholder="Define Day" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Month</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="month" placeholder="Define Day" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Day of Week</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="dayofweek" placeholder="Define Day of Week" type="text"
+                                           class="form-control" value="" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                            <div class="modal-footer">
+                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary ms-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                         stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create New Cron
+                </button>
+            </div>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="modal-cron-edit" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Cron</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="edit-cron" action="/crons/edit" method="POST">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="mb-3">
+                            <label class="form-label required">Name</label>
+                            <div class="input-group input-group-flat">
+                                <input required name="name" placeholder="Name of Cron" type="text" class="form-control" value=""
+                                       autocomplete="off" id="name">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label required">Description</label>
+                                <div class="input-group input-group-flat">
+                                    <input required name="description" placeholder="Explain what the cron will do" type="text"
+                                           class="form-control" value="" autocomplete="off" id="description">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label required">Command</label>
+                                <div class="input-group input-group-flat">
+                                    <input required name="command" placeholder="Command" type="text"
+                                           class="form-control" value="" autocomplete="off" id="command">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Second</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="second" placeholder="Define Seconds" type="text"
+                                           class="form-control" value="" autocomplete="off" id="second">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Minute</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="minute" placeholder="Define Minute" type="text"
+                                           class="form-control" value="" autocomplete="off" id="minute">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Hour</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="hour" placeholder="Define Hour" type="text"
+                                           class="form-control" value="" autocomplete="off" id="hour">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Day</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="day" placeholder="Define Day" type="text"
+                                           class="form-control" value="" autocomplete="off" id="day">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Month</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="month" placeholder="Define Day" type="text"
+                                           class="form-control" value="" autocomplete="off" id="month">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Day of Week</label>
+                                <div class="input-group input-group-flat">
+                                    <input name="dayofweek" placeholder="Define Day of Week" type="text"
+                                           class="form-control" value="" autocomplete="off" id="dayofweek">
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary ms-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Submit
+                    </button>
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal modal-blur fade" id="modal-danger" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-status bg-danger"></div>
+            <div class="modal-body text-center py-4">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24"
+                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 9v2m0 4v.01"/>
+                    <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"/>
+                </svg>
+
+
+                <h3>Are you sure?</h3>
+                <div class="text-muted">Do you really want to Delete .</div>
+                <input type="hidden" id="deletedepartment" value="0"/>
+            </div>
+
+            <div class="modal-footer">
+                <div class="w-100">
+                    <div class="row">
+                        <div class="col"><a href="#" class="btn btn-white w-100" data-bs-dismiss="modal">
+                            Cancel
+                        </a></div>
+                        <!-- <div class="col"><a href="" class="btn btn-danger w-100" data-bs-dismiss="modal"
+                                            onclick="deleteRecord()">
+                            Delete
+                        </a></div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function setDeletDepartment(obj) {
+        $("#deletedcron").val(obj.id);
+    }
+
+    /*function deleteRecord() {
+        let id = $("#deletedepartment").val();
+        console.log(id);
+        $.get('deletedepartment/' + id, (response) => {
+            // response from PHP back-end
+            window.open('?','_self');
+
+        });
+    }*/
+
+    $(function () {
+        $('.status').on('change', function () {
+            let id = $(this).val();
+            if ($(this).is(':checked')) {
+                $.ajax({
+                    method: "GET",
+                    url: 'changestatus/' + id + '/' + true,
+                }).done(function( res ) {
+                    if(res.status){
+
+                    }
+                });
+            } else {
+                $.ajax({
+                    method: "GET",
+                    url: 'changestatus/' + id + '/' + false,
+                }).done(function( res ) {
+                    if(res.status){
+                        
+                    }
+                });
+            }
+        });
+    });
+
+
+    $(document).ready(function () {
+        setTimeout(function() {
+            $('#success_message').fadeOut("slow");
+            '<%Session["message"] = " "; %>';
+
+        }, 2000 );
+        $('.editcron').click(function () {
+            clickonButton(this);
+        });
+
+
+        if(document.getElementById("runningStatus").textContent === 'Running')
+        {
+            $('#startManually').prop('disabled', true);
+        }
+    });
+
+
+    function clickonButton(obj) {
+        let id = $(obj).val();
+        $.get('editcron/' + id, (response) => {
+            // response from PHP back-end
+            document.getElementById("edit-cron").action = "/crons/edit/" + response.data._id;
+            document.getElementById("name").value = response.data.name;
+            document.getElementById("description").value = response.data.description;
+            document.getElementById("command").value = response.data.command;
+            document.getElementById("second").value = response.data.second;
+            document.getElementById("minute").value = response.data.minute;
+            document.getElementById("hour").value = response.data.hour;
+            document.getElementById("day").value = response.data.day;
+            document.getElementById("month").value = response.data.month;
+            document.getElementById("dayofweek").value = response.data.dayofweek;
+        });
+    }
+
+    function startCron(obj)
+    {
+        let cURL = obj.split('"');
+        $.ajax({
+            method: "GET",
+            url: cURL[1],
+        }).done(function( res ) {
+            alert(res);
+            window.location.href = "https://bridge.lenskart.com/crons/list";
+        });
+    }
+
+</script>
